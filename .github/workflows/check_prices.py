@@ -97,16 +97,16 @@ URL_MOBILE_MIX = "https://mobile-mix.jp/?category=7"
 
 # DiscordのウェブフックURLを設定
 # 冒険者ギルド：iphone
-DISCORD_WEBHOOK_URL1 = 'https://discord.com/api/webhooks/1325079173399842889/hHIUsQ0WuOmboet6aq9-4q9gyTPxzKzKcH6V1F6qmKJad1-wIZJDwgVwFuAhy4jxSqNu'
-#DISCORD_WEBHOOK_URL1 = 'https://discord.com/api/webhooks/1163480358612901999/nFGZynR9-97R_XncfZw54VDrcZbA-S1YgrSc6mAYX-MgKEaQ9YZ_IeVTeALbu4ihmnyR'
+#DISCORD_WEBHOOK_URL1 = 'https://discord.com/api/webhooks/1325079173399842889/hHIUsQ0WuOmboet6aq9-4q9gyTPxzKzKcH6V1F6qmKJad1-wIZJDwgVwFuAhy4jxSqNu'
+DISCORD_WEBHOOK_URL1 = 'https://discord.com/api/webhooks/1163480358612901999/nFGZynR9-97R_XncfZw54VDrcZbA-S1YgrSc6mAYX-MgKEaQ9YZ_IeVTeALbu4ihmnyR'
 
 # ちんおちんちん：iphone
-DISCORD_WEBHOOK_URL2 = 'https://discord.com/api/webhooks/1297388299912085606/RcfnqtqUjXbC46Lb_5uY-IPuqIVfkuJ44bzm09wgTQOUAI0Yg5C0cU5BsjeCb22o4m9p'
-#DISCORD_WEBHOOK_URL2 = 'https://discord.com/api/webhooks/1163480358612901999/nFGZynR9-97R_XncfZw54VDrcZbA-S1YgrSc6mAYX-MgKEaQ9YZ_IeVTeALbu4ihmnyR'
+#DISCORD_WEBHOOK_URL2 = 'https://discord.com/api/webhooks/1297388299912085606/RcfnqtqUjXbC46Lb_5uY-IPuqIVfkuJ44bzm09wgTQOUAI0Yg5C0cU5BsjeCb22o4m9p'
+DISCORD_WEBHOOK_URL2 = 'https://discord.com/api/webhooks/1163480358612901999/nFGZynR9-97R_XncfZw54VDrcZbA-S1YgrSc6mAYX-MgKEaQ9YZ_IeVTeALbu4ihmnyR'
 
 # 冒険者ギルド：カメラ
-DISCORD_WEBHOOK_URL3 = 'https://discord.com/api/webhooks/1325079403243503616/a4F7IqxqHcw_ZfnFLLyiz4N49Lky-gWxsbG7tmjIze1_UfoY7ssm2jShSlwakFylutK2'
-#DISCORD_WEBHOOK_URL3 = 'https://discord.com/api/webhooks/1325092803109458051/KbF85tUoBTPtYyZC8ARg0W7JHTQsnHBWyVofGF24GStd_5fYJQQcYaAtb4Kz7p-3uqN6'
+#DISCORD_WEBHOOK_URL3 = 'https://discord.com/api/webhooks/1325079403243503616/a4F7IqxqHcw_ZfnFLLyiz4N49Lky-gWxsbG7tmjIze1_UfoY7ssm2jShSlwakFylutK2'
+DISCORD_WEBHOOK_URL3 = 'https://discord.com/api/webhooks/1325092803109458051/KbF85tUoBTPtYyZC8ARg0W7JHTQsnHBWyVofGF24GStd_5fYJQQcYaAtb4Kz7p-3uqN6'
 
 # 冒険者ギルド：iphoneのDiscordに通知を送信する関数
 def send_discord_notify1(message):
