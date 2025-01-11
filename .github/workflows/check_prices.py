@@ -80,6 +80,7 @@ rudeya_instax_products = [
 
 #TOMIYA富屋-チェキの商品情報
 tomiya_instax_products = [
+    {"name": "チェキミニ MICKEY & FRIENDS", "url": "https://www.jptomiya.com/web/#/", "xpath": "/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-scroll-view/div/div/div/uni-view/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/uni-view[1]/uni-view[4]/uni-view[2]/uni-view[2]/uni-view[1]/span/span/uni-view/uni-view/uni-view[2]/uni-text[2]/span", "retail_price": 900},
     {"name": "写ルンです", "url": "https://www.jptomiya.com/web/#/", "xpath": "/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-scroll-view/div/div/div/uni-view/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/span/span/uni-view/uni-view/uni-view[2]/uni-text[2]/span", "retail_price": 1980},
     {"name": "instax mini JP1", "url": "https://www.jptomiya.com/web/#/", "xpath": "/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-scroll-view/div/div/div/uni-view/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/uni-view[1]/uni-view[2]/uni-view[2]/uni-view[2]/uni-view[1]/span/span/uni-view/uni-view/uni-view[2]/uni-text[2]/span", "retail_price": 814},
     {"name": "instax mini JP2", "url": "https://www.jptomiya.com/web/#/", "xpath": "/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-scroll-view/div/div/div/uni-view/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/uni-view[1]/uni-view[1]/uni-view[2]/uni-view[2]/uni-view[1]/span/span/uni-view/uni-view/uni-view[2]/uni-text[2]/span", "retail_price": 1510}
@@ -527,10 +528,10 @@ def check_tomiya_instax_prices(driver, products, csv_file_path):
 
             # リストに保存
             change_str = f'+{change}円' if change > 0 else f'-{abs(change)}円' if change < 0 else '±0'
-            prices.append(f'**{product_name}**: {current_price}円 ({change_str}){"🔥" if change > 0 else "💧" if change < 0 else ""}')
+            prices.append(f'{product_name}: {current_price}円 ({change_str}){"🔥" if change > 0 else "💧" if change < 0 else ""}')
             profit_str = f'+{profit}円' if profit > 0 else f'-{abs(profit)}円' if profit < 0 else '0円'
             profit1_str = f'1%: +{profit1}円' if profit1 > 0 else f'1%: -{abs(profit1)}円' if profit1 < 0 else '1%: 0円'
-            profits.append(f'**{product_name}**: {profit_str} ({profit1_str})')
+            profits.append(f'{product_name}: {profit_str} ({profit1_str})')
 
             # CSVファイルに新しい買取価格を保存
             with open(csv_file_path, 'a', newline='', encoding='utf-8-sig') as file:
