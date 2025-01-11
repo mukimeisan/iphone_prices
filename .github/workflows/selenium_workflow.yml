@@ -37,7 +37,7 @@ jobs:
 
     - name: Commit and push changes
       env:
-        GITHUB_TOKEN: ${{ secrets.ACTIONS_DEPLOY_KEY_IPHONE_PRICE }}
+        GITHUB_TOKEN: ${{ secrets.ACTIONS_DEPLOY_KEY }}
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
