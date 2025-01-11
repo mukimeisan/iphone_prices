@@ -81,9 +81,9 @@ rudeya_instax_products = [
 
 #TOMIYA富屋-チェキの商品情報
 tomiya_instax_products = [
-    {"name": "写ルンです", "url": "https://www.jptomiya.com/web/#/", "xpath": "/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-scroll-view/div/div/div/uni-view/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/uni-view[1]/uni-view/uni-view[2]/uni-view[2]/uni-view[1]/span/span/uni-view/uni-view/uni-view[2]/uni-text[2]/span", "retail_price": 1980, "jan_code": "4547410369137"},
-    {"name": "instax mini JP1", "url": "https://www.jptomiya.com/web/#/", "xpath": "/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-scroll-view/div/div/div/uni-view/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/uni-view[1]/uni-view/uni-view[2]/uni-view[2]/uni-view[1]/span/span/uni-view/uni-view/uni-view[2]/uni-text[2]/span", "retail_price": 814, "jan_code": "4547410377224"},
-    {"name": "instax mini JP2", "url": "https://www.jptomiya.com/web/#/", "xpath": "/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-scroll-view/div/div/div/uni-view/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/uni-view[1]/uni-view/uni-view[2]/uni-view[2]/uni-view[1]/span/span/uni-view/uni-view/uni-view[2]/uni-text[2]/span", "retail_price": 1510, "jan_code": "4547410377231"}
+    {"name": "写ルンです", "url": "https://www.jptomiya.com/web/#/", "xpath": "/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-scroll-view/div/div/div/uni-view/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/span/span/uni-view/uni-view/uni-view[2]/uni-text[2]/span", "retail_price": 1980},
+    {"name": "instax mini JP1", "url": "https://www.jptomiya.com/web/#/", "xpath": "/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-scroll-view/div/div/div/uni-view/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/uni-view[1]/uni-view[2]/uni-view[2]/uni-view[2]/uni-view[1]/span/span/uni-view/uni-view/uni-view[2]/uni-text[2]/span", "retail_price": 814},
+    {"name": "instax mini JP2", "url": "https://www.jptomiya.com/web/#/", "xpath": "/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-scroll-view/div/div/div/uni-view/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/uni-view[1]/uni-view[1]/uni-view[2]/uni-view[2]/uni-view[1]/span/span/uni-view/uni-view/uni-view[2]/uni-text[2]/span", "retail_price": 1510}
 ]
 
 # 森森買取の商品情報
@@ -490,34 +490,17 @@ def check_tomiya_instax_prices(driver, products, csv_file_path, first_run):
         product_url = product["url"]
         product_xpath = product["xpath"]
         retail_price = product["retail_price"]
-        jan_code = product["jan_code"]
 
         logging.info(f"Checking price from URL: {product_url}")
 
         try:
             driver.get(product_url)
-            time.sleep(5)  # ページが完全にロードされるのを待つ               
+            time.sleep(5)  # ページが完全にロードされるのを待つ
 
-            # ジャンコードを入力
-            search_box_xpath = "/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[1]/uni-view/uni-view[1]/uni-view/uni-view[2]/uni-view[1]/uni-view[1]/uni-view/uni-input/div/form/input"
-            search_box = driver.find_element(By.XPATH, search_box_xpath)
-            search_box.send_keys(jan_code)
-            
-            # 検索ボタンをクリック
-            search_button_xpath = "/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[1]/uni-view/uni-view[1]/uni-view/uni-view[2]/uni-view[1]/uni-view[3]"
-            search_button = driver.find_element(By.XPATH, search_button_xpath)
-            search_button.click()
-            
-            time.sleep(5) # 検索結果が表示されるのを待つ
-
-            WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.XPATH, product_xpath)))
+            WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.XPATH, product_xpath)))  # タイムアウト時間を40秒に延長
             price_element = driver.find_element(By.XPATH, product_xpath)
             current_price_text = price_element.text.replace(',', '').replace('円', '').strip()
-            if current_price_text.isdigit():
-                current_price = int(current_price_text)
-            else:
-                logging.error(f"Price for {product_name} on TOMIYA富屋 is not a valid number: '{current_price_text}'")
-                continue
+            current_price = int(current_price_text)
 
             logging.info(f"Current Price for {product_name} on TOMIYA富屋: {current_price}")
 
@@ -545,10 +528,10 @@ def check_tomiya_instax_prices(driver, products, csv_file_path, first_run):
 
             # リストに保存
             change_str = f'+{change}円' if change > 0 else f'-{abs(change)}円' if change < 0 else '±0'
-            prices.append(f'{product_name}: {current_price}円 ({change_str}){"🔥" if change > 0 else "💧" if change < 0 else ""}')
+            prices.append(f'**{product_name}**: {current_price}円 ({change_str}){"🔥" if change > 0 else "💧" if change < 0 else ""}')
             profit_str = f'+{profit}円' if profit > 0 else f'-{abs(profit)}円' if profit < 0 else '0円'
             profit1_str = f'1%: +{profit1}円' if profit1 > 0 else f'1%: -{abs(profit1)}円' if profit1 < 0 else '1%: 0円'
-            profits.append(f'{product_name}: {profit_str} ({profit1_str})')
+            profits.append(f'**{product_name}**: {profit_str} ({profit1_str})')
 
             # CSVファイルに新しい買取価格を保存
             with open(csv_file_path, 'a', newline='', encoding='utf-8-sig') as file:
