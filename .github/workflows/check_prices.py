@@ -9,6 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime
 import pytz
@@ -80,9 +81,9 @@ rudeya_instax_products = [
 
 #TOMIYA富屋-チェキの商品情報
 tomiya_instax_products = [
-    {"name": "写ルンです", "url": "https://www.jptomiya.com/web/#/", "xpath": "/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-scroll-view/div/div/div/uni-view/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/span/span/uni-view/uni-view/uni-view[2]/uni-text[2]", "retail_price": 1980},
-    {"name": "instax mini JP1", "url": "https://www.jptomiya.com/web/#/", "xpath": "/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-scroll-view/div/div/div/uni-view/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/uni-view[1]/uni-view[2]/uni-view[2]/uni-view[2]/uni-view[1]/span/span/uni-view/uni-view/uni-view[2]/uni-text[2]/span", "retail_price": 814},
-    {"name": "instax mini JP2", "url": "https://www.jptomiya.com/web/#/", "xpath": "/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-scroll-view/div/div/div/uni-view/uni-view[1]/uni-view[3]/uni-view[2]/uni-view[2]/uni-view[1]/uni-view[1]/uni-view[1]/uni-view[2]/uni-view[2]/uni-view[1]/span/span/uni-view/uni-view/uni-view[2]/uni-text[2]/span", "retail_price": 1510}
+    {"name": "写ルンです", "url": "https://www.jptomiya.com/web/#/", "class": "cl_red fw-w", "retail_price": 1980, "jan_code": "4547410369137"},
+    {"name": "instax mini JP1", "url": "https://www.jptomiya.com/web/#/", "class": "cl_red fw-w", "retail_price": 814, "jan_code": "4547410377224"},
+    {"name": "instax mini JP2", "url": "https://www.jptomiya.com/web/#/", "class": "cl_red fw-w", "retail_price": 1510, "jan_code": "4547410377231"}
 ]
 
 # 森森買取の商品情報
@@ -487,19 +488,35 @@ def check_tomiya_instax_prices(driver, products, csv_file_path, first_run):
     for product in products:
         product_name = product["name"]
         product_url = product["url"]
-        product_xpath = product["xpath"]
+        product_xpath = product["class"]
         retail_price = product["retail_price"]
+        jan_code = product["jan_code"]
 
         logging.info(f"Checking price from URL: {product_url}")
 
         try:
             driver.get(product_url)
-            time.sleep(5)  # ページが完全にロードされるのを待つ
+            time.sleep(5)  # ページが完全にロードされるのを待つ               
 
-            WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.XPATH, product_xpath)))  # タイムアウト時間を40秒に延長
-            price_element = driver.find_element(By.XPATH, product_xpath)
+            # ジャンコードを入力
+            search_box = driver.find_element(By.CSS_SELECTOR, "input.uni-input-input")
+            search_box.send_keys(jan_code)
+            search_box.send_keys(Keys.RETURN)
+            
+            # 検索ボタンをクリック
+            search_button = driver.find_element(By.CSS_SELECTOR, "uni-view.px15.fs15.color-zs.cursor-hover")
+            search_button.click()
+            
+            time.sleep(5) # 検索結果が表示されるのを待つ
+
+            WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.CLASS_NAME, product_class)))  # タイムアウト時間を40秒に延長
+            price_element = driver.find_element(By.CLASS_NAME, product_class)
             current_price_text = price_element.text.replace(',', '').replace('円', '').strip()
-            current_price = int(current_price_text)
+            if current_price_text.isdigit():
+                current_price = int(current_price_text)
+            else:
+                logging.error(f"Price for {product_name} on TOMIYA富屋 is not a valid number: '{current_price_text}'")
+                continue
 
             logging.info(f"Current Price for {product_name} on TOMIYA富屋: {current_price}")
 
