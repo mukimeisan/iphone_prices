@@ -2,7 +2,7 @@ name: Update CSV with Selenium
 
 on:
   schedule:
-    - cron: '*/1 * * * *'  # 毎分実行
+    - cron: '*/4 * * * *'  # 3分ごとに実行
   push:
     branches:
       - main  # 適宜ブランチを指定してください
