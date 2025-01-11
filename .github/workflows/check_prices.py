@@ -10,9 +10,14 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+from datetime import datetime
+import pytz
 
 # ロギングの設定
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# 日本時間（JST）を設定
+JST = pytz.timezone('Asia/Tokyo')
 
 # 商品情報
 products = [
@@ -230,9 +235,10 @@ def check_price(driver, url, products, site_name, csv_file_path):
                 profits.append(f'{product_name}: {profit_str} ({profit1_str})')
 
                 # CSVファイルに新しい買取価格を保存
+                now = datetime.now(JST).strftime('%Y-%m-%d %H:%M:%S')
                 with open(csv_file_path, 'a', newline='', encoding='utf-8-sig') as file:
                     writer = csv.writer(file)
-                    writer.writerow([time.strftime('%Y-%m-%d %H:%M:%S'), product_name, site_name, current_price, change, profit])
+                    writer.writerow([now, product_name, site_name, current_price, change, profit])
 
             except Exception as e:
                 logging.error(f"エラーが発生しました（{product_name} on {site_name}）: {e}")
