@@ -39,8 +39,8 @@ jobs:
         CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+')
         echo "Chrome version: $CHROME_VERSION"
 
-        echo "Getting ChromeDriver version..."
-        CHROME_DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION%.*}")
+        # ChromeDriverのバージョンを手動で確認してダウンロード
+        CHROME_DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_131.0.6778")
         echo "ChromeDriver version: $CHROME_DRIVER_VERSION"
 
         echo "Downloading and installing ChromeDriver..."
