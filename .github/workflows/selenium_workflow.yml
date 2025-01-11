@@ -32,23 +32,25 @@ jobs:
         sudo wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
         sudo dpkg -i google-chrome-stable_current_amd64.deb
         sudo apt-get install -f
-        sudo wget -q https://chromedriver.storage.googleapis.com/$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip
+        CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE)
+        sudo wget -q https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip
         sudo unzip chromedriver_linux64.zip -d /usr/local/bin/
         sudo chmod +x /usr/local/bin/chromedriver
+        export PATH=$PATH:/usr/local/bin
 
     - name: Run Selenium script
       env:
         DISPLAY: ":99"  # 仮想ディスプレイ環境を設定
       run: |
         Xvfb :99 -ac &
-        python .github/workflows/check_prices.py  # スクリプトファイルの正しいパスを指定
+        python .github/workflows/check_prices.py
 
     - name: Commit and push changes
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add buyback_prices.csv
-        git commit -m 'Update CSV with Selenium results'
+        git commit -m 'Update buyback_prices.csv with Selenium results'
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
