@@ -1,11 +1,18 @@
 name: Update CSV with Selenium
 
 on:
-  workflow_dispatch:  # 手動実行用のトリガー
+  schedule:
+    - cron: '*/1 * * * *'  # 毎分実行
+  push:
+    branches:
+      - main  # 適宜ブランチを指定してください
 
 jobs:
   update_csv:
     runs-on: ubuntu-latest
+    concurrency:  # 並行実行を制限する
+      group: update-csv
+      cancel-in-progress: true  # 実行中のワークフローをキャンセル
 
     steps:
     - name: Checkout repository
