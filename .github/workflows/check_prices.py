@@ -149,7 +149,7 @@ chrome_options.add_argument("window-size=1920x1080")
 chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36")
 
 # WebDriverのパスを指定
-service = Service('C:/webdriver/chromedriver.exe')  # Replace with your path to chromedriver
+service = Service(os.getenv('CHROMEDRIVER_PATH'))
 
 csv_file_path = 'buyback_prices.csv'
 
