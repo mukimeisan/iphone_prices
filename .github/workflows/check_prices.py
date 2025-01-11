@@ -166,7 +166,7 @@ if not os.path.exists(csv_file_path):
         writer = csv.writer(file)
         writer.writerow(["time", "product", "site", "price", "change", "profit"])
 
-def check_price(driver, url, products, site_name, csv_file_path):
+def check_price(driver, url, products, site_name, csv_file_path, first_run):
     logging.info(f"Checking prices from URL: {url}")
 
     try:
@@ -261,7 +261,7 @@ def check_price(driver, url, products, site_name, csv_file_path):
     except Exception as e:
         logging.error(f"エラーが発生しました: {e}")
 
-def check_rudeya_iphone_prices(driver, products, csv_file_path):
+def check_rudeya_iphone_prices(driver, products, csv_file_path, first_run):
     prices = []
     profits = []
     changes = False
@@ -334,7 +334,7 @@ def check_rudeya_iphone_prices(driver, products, csv_file_path):
         send_discord_notify1(message)
         send_discord_notify2(message)
 
-def check_rudeya_camera_prices(driver, products, csv_file_path):
+def check_rudeya_camera_prices(driver, products, csv_file_path, first_run):
     prices = []
     profits = []
     changes = False
@@ -406,7 +406,7 @@ def check_rudeya_camera_prices(driver, products, csv_file_path):
         )
         send_discord_notify3(message)
 
-def check_rudeya_instax_prices(driver, products, csv_file_path):
+def check_rudeya_instax_prices(driver, products, csv_file_path, first_run):
     prices = []
     profits = []
     changes = False
@@ -480,7 +480,7 @@ def check_rudeya_instax_prices(driver, products, csv_file_path):
 
 
 
-def check_tomiya_instax_prices(driver, products, csv_file_path):
+def check_tomiya_instax_prices(driver, products, csv_file_path, first_run):
     prices = []
     profits = []
     changes = False
@@ -553,7 +553,7 @@ def check_tomiya_instax_prices(driver, products, csv_file_path):
         send_discord_notify3(message)
 
 
-def check_morimori_prices(driver, products, csv_file_path):
+def check_morimori_prices(driver, products, csv_file_path, first_run):
     prices = []
     profits = []
     changes = False
@@ -626,7 +626,7 @@ def check_morimori_prices(driver, products, csv_file_path):
         send_discord_notify1(message)
         send_discord_notify2(message)
 
-def check_wiki_prices(driver, products, csv_file_path):
+def check_wiki_prices(driver, products, csv_file_path, first_run):
     prices = []
     profits = []
     changes = False
@@ -704,17 +704,22 @@ def check_wiki_prices(driver, products, csv_file_path):
 def main():
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
+    first_run = True # 初回実行フラグを設定
+
     # 30秒ごとに無限にチェックを繰り返す
     while True:
-        check_price(driver, URL_KAITORI_ICHOME, products, "買取一丁目", csv_file_path)
-        check_price(driver, URL_MOBILE_MIX, mobile_mix_products, "モバイルミックス", csv_file_path)
-        check_rudeya_iphone_prices(driver, rudeya_iphone_products, csv_file_path)
-        check_rudeya_camera_prices(driver, rudeya_camera_products, csv_file_path)
-        check_rudeya_instax_prices(driver, rudeya_instax_products, csv_file_path)
-        check_tomiya_instax_prices(driver, tomiya_instax_products, csv_file_path)
-        check_morimori_prices(driver, morimori_products, csv_file_path)
-        check_wiki_prices(driver, wiki_products, csv_file_path)
+        check_price(driver, URL_KAITORI_ICHOME, products, "買取一丁目", csv_file_path, first_run)
+        check_price(driver, URL_MOBILE_MIX, mobile_mix_products, "モバイルミックス", csv_file_path, first_run)
+        check_rudeya_iphone_prices(driver, rudeya_iphone_products, csv_file_path, first_run)
+        check_rudeya_camera_prices(driver, rudeya_camera_products, csv_file_path, first_run)
+        check_rudeya_instax_prices(driver, rudeya_instax_products, csv_file_path, first_run)
+        check_tomiya_instax_prices(driver, tomiya_instax_products, csv_file_path, first_run)
+        check_morimori_prices(driver, morimori_products, csv_file_path, first_run)
+        check_wiki_prices(driver, wiki_products, csv_file_path, first_run)
         logging.info("30秒後に再チェックします...")
+
+        first_run = False # 2回目以降は通知を行うためにフラグを更新
+        
         time.sleep(30)
 
 if __name__ == "__main__":
