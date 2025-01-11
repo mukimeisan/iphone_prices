@@ -499,12 +499,11 @@ def check_tomiya_instax_prices(driver, products, csv_file_path, first_run):
             time.sleep(5)  # ページが完全にロードされるのを待つ               
 
             # ジャンコードを入力
-            search_box = driver.find_element(By.CSS_SELECTOR, "input.uni-input-input")
+            search_box = driver.find_element(By.CLASS_NAME, "uni-input-form")
             search_box.send_keys(jan_code)
-            search_box.send_keys(Keys.RETURN)
             
             # 検索ボタンをクリック
-            search_button = driver.find_element(By.CSS_SELECTOR, "uni-view.px15.fs15.color-zs.cursor-hover")
+            search_button = driver.find_element(By.CLASS_NAME, "px15 fs15 color-zs cursor-hover")
             search_button.click()
             
             time.sleep(5) # 検索結果が表示されるのを待つ
