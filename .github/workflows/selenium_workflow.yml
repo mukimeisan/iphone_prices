@@ -41,7 +41,7 @@ jobs:
         DISPLAY: ":99"  # 仮想ディスプレイ環境を設定
       run: |
         Xvfb :99 -ac &
-        python script.py
+        python .github/workflows/check_prices.py  # スクリプトファイルの正しいパスを指定
 
     - name: Commit and push changes
       run: |
