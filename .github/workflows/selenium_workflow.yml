@@ -25,39 +25,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Install Chrome and chromedriver
-      run: |
-        set -e  # エラーハンドリングを追加
-        sudo apt-get update
-        sudo apt-get install -y wget unzip
-        sudo wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        echo "Installing Google Chrome..."
-        sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get install -f -y
-        echo "Google Chrome installed."
-
-        echo "Getting Chrome version..."
-        CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+')
-        echo "Chrome version: $CHROME_VERSION"
-
-        # ChromeDriverのバージョンを手動で確認してダウンロード
-        CHROME_DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_131.0.6778")
-        echo "ChromeDriver version: $CHROME_DRIVER_VERSION"
-
-        echo "Downloading and installing ChromeDriver..."
-        sudo wget -q https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip
-        sudo unzip chromedriver_linux64.zip -d /usr/local/bin/
-        sudo chmod +x /usr/local/bin/chromedriver
-        echo "ChromeDriver installed."
-
-    - name: Ensure ChromeDriver is in PATH
-      run: |
-        export PATH=$PATH:/usr/local/bin
-        echo $PATH  # 確認のためにPATHを出力
-
     - name: Run Selenium script
       env:
         DISPLAY: ":99"  # 仮想ディスプレイ環境を設定
-        CHROMEDRIVER_PATH: "/usr/local/bin/chromedriver"
       run: |
         Xvfb :99 -ac &
         python .github/workflows/check_prices.py
