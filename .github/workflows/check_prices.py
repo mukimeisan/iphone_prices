@@ -167,6 +167,18 @@ def check_price(driver, url, products, site_name, csv_file_path):
         driver.get(url)
         time.sleep(5)  # ページが完全にロードされるのを待つ
 
+        # 買取一丁目の場合、ボタンをクリックする
+        if site_name == "買取一丁目":
+            try:
+                all_button = WebDriverWait(driver, 20).until(
+                    EC.element_to_be_clickable((By.ID, "all-button"))
+                )
+                all_button.click()
+                logging.info("All button clicked")
+                time.sleep(5)  # ボタンのクリック後、ページが更新されるのを待つ
+            except Exception as e:
+                logging.error(f"Failed to click the all button: {e}")
+
         prices = []
         profits = []
         changes = False
