@@ -703,12 +703,12 @@ def check_wiki_prices(driver, products, csv_file_path):
 def main():
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
-    check_tomiya_instax_prices(driver, tomiya_instax_products, csv_file_path)
     check_price(driver, URL_KAITORI_ICHOME, products, "買取一丁目", csv_file_path)
     check_price(driver, URL_MOBILE_MIX, mobile_mix_products, "モバイルミックス", csv_file_path)
     check_rudeya_iphone_prices(driver, rudeya_iphone_products, csv_file_path)
     check_rudeya_camera_prices(driver, rudeya_camera_products, csv_file_path)
     check_rudeya_instax_prices(driver, rudeya_instax_products, csv_file_path)
+    check_tomiya_instax_prices(driver, tomiya_instax_products, csv_file_path)
     check_morimori_prices(driver, morimori_products, csv_file_path)
     check_wiki_prices(driver, wiki_products, csv_file_path)
 
