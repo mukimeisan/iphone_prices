@@ -244,7 +244,7 @@ def check_price(driver, url, products, site_name, csv_file_path):
                 logging.error(f"エラーが発生しました（{product_name} on {site_name}）: {e}")
 
         # 価格変動があった場合のみ通知を送信
-        if changes:
+        if changes and not first_run:
             kaitoriya_icon = f'1️⃣' if site_name == '買取一丁目' else '📱'
             URL_NOFICE = f'{URL_KAITORI_ICHOME}' if site_name == '買取一丁目' else URL_MOBILE_MIX
             message = (
@@ -322,7 +322,7 @@ def check_rudeya_iphone_prices(driver, products, csv_file_path):
             logging.error(f"エラーが発生しました（{product_name} on 買取ルデヤ）: {e}")
 
     # 価格変動があった場合のみ通知を送信
-    if changes:
+    if changes and not first_run:
         message = (
             '🥸 [買取ルデヤ](<https://kaitori-rudeya.com/search/index/iPhone%2016/-/-/->)\n' +
             '\n'.join(prices) + '\n\n' +
@@ -395,7 +395,7 @@ def check_rudeya_camera_prices(driver, products, csv_file_path):
             logging.error(f"エラーが発生しました（{product_name} on 買取ルデヤ）: {e}")
 
     # 価格変動があった場合のみ通知を送信
-    if changes:
+    if changes and not first_run:
         message = (
             '🥸 [買取ルデヤ](<https://kaitori-rudeya.com/search/index/canon/-/-/11>)\n' +
             '\n'.join(prices) + '\n\n' +
@@ -467,7 +467,7 @@ def check_rudeya_instax_prices(driver, products, csv_file_path):
             logging.error(f"エラーが発生しました（{product_name} on 買取ルデヤ）: {e}")
 
     # 価格変動があった場合のみ通知を送信
-    if changes:
+    if changes and not first_run:
         message = (
             '🥸 [買取ルデヤ](<https://kaitori-rudeya.com/search/index/FUJIFILM%E3%80%80%E6%9E%9A/-/-/->)\n' +
             '\n'.join(prices) + '\n\n' +
@@ -541,7 +541,7 @@ def check_tomiya_instax_prices(driver, products, csv_file_path):
             logging.error(f"エラーが発生しました（{product_name} on TOMIYA富屋）: {e}")
 
     # 価格変動があった場合のみ通知を送信
-    if changes:
+    if changes and not first_run:
         message = (
             '🗻 [TOMIYA富屋](<https://www.jptomiya.com/web/#/>)\n' +
             '\n'.join(prices) + '\n\n' +
@@ -614,7 +614,7 @@ def check_morimori_prices(driver, products, csv_file_path):
             logging.error(f"エラーが発生しました（{product_name} on 森森買取）: {e}")
 
     # 価格変動があった場合のみ通知を送信
-    if changes:
+    if changes and not first_run:
         message = (
             '🌳 [森森買取](<https://www.morimori-kaitori.jp/search/iphone%2016%20pro?sk=iphone+16+pro>)\n' +
             '\n'.join(prices) + '\n\n' +
@@ -687,7 +687,7 @@ def check_wiki_prices(driver, products, csv_file_path):
             logging.error(f"エラーが発生しました（{product_name} on 買取Wiki）: {e}")
 
     # 価格変動があった場合のみ通知を送信
-    if changes:
+    if changes and not first_run:
         message = (
             '📚 [買取Wiki](<https://iphonekaitori.tokyo/search?type=&q=iPhone+16+pro#searchtop>)\n' +
             '\n'.join(prices) + '\n\n' +
