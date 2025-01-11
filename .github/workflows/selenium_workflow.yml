@@ -27,16 +27,27 @@ jobs:
 
     - name: Install Chrome and chromedriver
       run: |
+        set -e  # エラーハンドリングを追加
         sudo apt-get update
         sudo apt-get install -y wget unzip
         sudo wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        echo "Installing Google Chrome..."
         sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get install -f -y
+        echo "Google Chrome installed."
+
+        echo "Getting Chrome version..."
         CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+')
+        echo "Chrome version: $CHROME_VERSION"
+
+        echo "Getting ChromeDriver version..."
         CHROME_DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION%.*}")
+        echo "ChromeDriver version: $CHROME_DRIVER_VERSION"
+
+        echo "Downloading and installing ChromeDriver..."
         sudo wget -q https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip
         sudo unzip chromedriver_linux64.zip -d /usr/local/bin/
         sudo chmod +x /usr/local/bin/chromedriver
-        echo "ChromeDriver version: $CHROME_DRIVER_VERSION"
+        echo "ChromeDriver installed."
 
     - name: Ensure ChromeDriver is in PATH
       run: |
