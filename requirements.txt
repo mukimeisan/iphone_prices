@@ -1,5 +1,2 @@
-os
 requests
-csv
-logging
 selenium==4.8.0
