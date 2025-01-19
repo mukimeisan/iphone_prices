@@ -4,7 +4,7 @@ on:
   workflow_dispatch:  # 手動実行用のトリガー
 
 jobs:
-  update_csv1:
+  update_csv:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,33 +21,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run Selenium script for check_price_chome.py
+    - name: Run Selenium script
       env:
         DISPLAY: ":99"  # 仮想ディスプレイ環境を設定
       run: |
         Xvfb :99 -ac &
-        python .github/workflows/check_price_chome.py
-
-  update_csv2:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-
-    - name: Run Selenium script for check_prices_mobami.py
-      env:
-        DISPLAY: ":99"  # 仮想ディスプレイ環境を設定
-      run: |
-        Xvfb :99 -ac &
-        python .github/workflows/check_prices_mobami.py
+        python .github/workflows/check_prices.py
