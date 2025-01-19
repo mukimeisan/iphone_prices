@@ -1,10 +1,10 @@
-name: Update CSV with Selenium
+name: iPhone Price Check 1chome
 
 on:
   workflow_dispatch:  # 手動実行用のトリガー
 
 jobs:
-  update_csv:
+  CheckPrices:
     runs-on: ubuntu-latest
 
     steps:
