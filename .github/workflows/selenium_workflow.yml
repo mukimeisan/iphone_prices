@@ -4,7 +4,7 @@ on:
   workflow_dispatch:  # 手動実行用のトリガー
 
 jobs:
-  update_csv:
+  update_csv1:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,19 +21,33 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run Selenium script
+    - name: Run Selenium script for check_price_chome.py
       env:
         DISPLAY: ":99"  # 仮想ディスプレイ環境を設定
       run: |
         Xvfb :99 -ac &
-        python .github/workflows/check_prices.py
+        python .github/workflows/check_price_chome.py
 
-    - name: Commit and push changes
+  update_csv2:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
       run: |
-        git config --global user.name 'github-actions[bot]'
-        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add buyback_prices.csv
-        git commit -m 'Update buyback_prices.csv with Selenium results'
-        git push
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Selenium script for check_prices_mobami.py
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DISPLAY: ":99"  # 仮想ディスプレイ環境を設定
+      run: |
+        Xvfb :99 -ac &
+        python .github/workflows/check_prices_mobami.py
