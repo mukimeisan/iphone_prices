@@ -245,7 +245,7 @@ def check_price_group1(driver, url, products, site_name, item_category):
 
                 # データをGAS経由でスプレッドシートに保存
                 data_to_send = {
-                "time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                "time": datetime.now(JST).strftime('%Y-%m-%d %H:%M:%S'),
                 "product": product_name,
                 "site": site_name,
                 "price": current_price,
@@ -345,7 +345,7 @@ def check_price_group2(driver,URL_NOFICE, products, site_name, item_category, ch
 
             # データをGAS経由でスプレッドシートに保存
             data_to_send = {
-            "time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "time": datetime.now(JST).strftime('%Y-%m-%d %H:%M:%S'),
             "product": product_name,
             "site": site_name,
             "price": current_price,
