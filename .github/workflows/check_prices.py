@@ -1,6 +1,5 @@
 import os
 import requests
-import csv
 import logging
 import time
 from selenium import webdriver
@@ -14,6 +13,9 @@ from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime
 import pytz
 
+# GASのウェブアプリのURL
+gas_url = "https://script.google.com/macros/s/AKfycbxQQhvpix9J-whI9e5gBWHII5BBemWtUua_wakuiojAyysTJzdo2NI8CNJDAiKqagx0/exec"
+
 # ロギングの設定
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -22,24 +24,24 @@ JST = pytz.timezone('Asia/Tokyo')
 
 # 商品情報
 products = [
-    {"name": "16 Pro 128GB", "id": "NewPrice_33821", "retail_price": 159800},
-    {"name": "16 Pro 256GB", "id": "NewPrice_33831", "retail_price": 174800},
-    {"name": "16 Pro 512GB", "id": "NewPrice_33841", "retail_price": 204800},
-    {"name": "16 Pro 1TB", "id": "NewPrice_33851", "retail_price": 234800},
-    {"name": "16 Pro Max 256GB", "id": "NewPrice_33781", "retail_price": 189800},
-    {"name": "16 Pro Max 512GB", "id": "NewPrice_33791", "retail_price": 219800},
-    {"name": "16 Pro Max 1TB", "id": "NewPrice_33801", "retail_price": 249800}
+    {"name": "16 Pro 128GB", "id": "NewPrice_33821", "retail_price": 159800, 'xpath': '//*[@id="smartphone-view-table"]/div[1]/div/div/div[2]/label[3]/small'},
+    {"name": "16 Pro 256GB", "id": "NewPrice_33831", "retail_price": 174800, 'xpath': '//*[@id="smartphone-view-table"]/div[3]/div/div/div[2]/label[3]/small'},
+    {"name": "16 Pro 512GB", "id": "NewPrice_33841", "retail_price": 204800, 'xpath': '//*[@id="smartphone-view-table"]/div[5]/div/div/div[2]/label[3]/small'},
+    {"name": "16 Pro 1TB", "id": "NewPrice_33851", "retail_price": 234800, 'xpath': '//*[@id="smartphone-view-table"]/div[7]/div/div/div[2]/label[3]/small'},
+    {"name": "16 Pro Max 256GB", "id": "NewPrice_33781", "retail_price": 189800, 'xpath': '//*[@id="smartphone-view-table"]/div[9]/div/div/div[2]/label[3]/small'},
+    {"name": "16 Pro Max 512GB", "id": "NewPrice_33791", "retail_price": 219800, 'xpath': '//*[@id="smartphone-view-table"]/div[11]/div/div/div[2]/label[3]/small'},
+    {"name": "16 Pro Max 1TB", "id": "NewPrice_33801", "retail_price": 249800, 'xpath': '//*[@id="smartphone-view-table"]/div[13]/div/div/div[2]/label[3]/small'}
 ]
 
 # モバイルミックスの商品情報
 mobile_mix_products = [
-    {"name": "16 Pro 128GB", "id": "model444", "retail_price": 159800},
-    {"name": "16 Pro 256GB", "id": "model445", "retail_price": 174800},
-    {"name": "16 Pro 512GB", "id": "model446", "retail_price": 204800},
-    {"name": "16 Pro 1TB", "id": "model447", "retail_price": 234800},
-    {"name": "16 Pro Max 256GB", "id": "model441", "retail_price": 189800},
-    {"name": "16 Pro Max 512GB", "id": "model442", "retail_price": 219800},
-    {"name": "16 Pro Max 1TB", "id": "model443", "retail_price": 249800}
+    {"name": "16 Pro 128GB", "id": "model444", "retail_price": 159800, "xpath": "/html/body/table/tbody/tr[8]/td[2]"},
+    {"name": "16 Pro 256GB", "id": "model445", "retail_price": 174800, "xpath": "/html/body/table/tbody/tr[10]/td[2]"},
+    {"name": "16 Pro 512GB", "id": "model446", "retail_price": 204800, "xpath": "/html/body/table/tbody/tr[12]/td[2]"},
+    {"name": "16 Pro 1TB", "id": "model447", "retail_price": 234800, "xpath": "/html/body/table/tbody/tr[14]/td[2]"},
+    {"name": "16 Pro Max 256GB", "id": "model441", "retail_price": 189800, "xpath": "/html/body/table/tbody/tr[2]/td[2]"},
+    {"name": "16 Pro Max 512GB", "id": "model442", "retail_price": 219800, "xpath": "/html/body/table/tbody/tr[4]/td[2]"},
+    {"name": "16 Pro Max 1TB", "id": "model443", "retail_price": 249800, "xpath": "/html/body/table/tbody/tr[6]/td[2]"}
 ]
 
 # 買取Wikiの商品情報
@@ -101,6 +103,14 @@ morimori_products = [
 # URL
 URL_KAITORI_ICHOME = "https://www.1-chome.com/keitai"
 URL_MOBILE_MIX = "https://mobile-mix.jp/?category=7"
+URL_KAITORI_RUDEYA_IPHONE = "https://kaitori-rudeya.com/search/index/iPhone%2016/-/-/-"
+URL_KAITORI_RUDEYA_CAMERA = "https://kaitori-rudeya.com/search/index/canon/-/-/11"
+URL_KAITORI_RUDEYA_INSTAX = "https://kaitori-rudeya.com/search/index/FUJIFILM%E3%80%80%E6%9E%9A/-/-/-"
+URL_MORIMORI_KAITORI = "https://www.morimori-kaitori.jp/search/iphone%2016%20pro?sk=iphone+16+pro"
+URL_KAITORI_WIKI = "https://iphonekaitori.tokyo/search?type=&q=iPhone+16+pro#searchtop"
+URL_TOMIYA = "https://www.jptomiya.com/web/#/"
+
+
 
 # DiscordのウェブフックURLを設定
 # 冒険者ギルド：iphone
@@ -115,38 +125,16 @@ DISCORD_WEBHOOK_URL2 = 'https://discord.com/api/webhooks/1163480358612901999/nFG
 #DISCORD_WEBHOOK_URL3 = 'https://discord.com/api/webhooks/1325079403243503616/a4F7IqxqHcw_ZfnFLLyiz4N49Lky-gWxsbG7tmjIze1_UfoY7ssm2jShSlwakFylutK2'
 DISCORD_WEBHOOK_URL3 = 'https://discord.com/api/webhooks/1325092803109458051/KbF85tUoBTPtYyZC8ARg0W7JHTQsnHBWyVofGF24GStd_5fYJQQcYaAtb4Kz7p-3uqN6'
 
-# 冒険者ギルド：iphoneのDiscordに通知を送信する関数
-def send_discord_notify1(message):
-    url = DISCORD_WEBHOOK_URL1
+# Discordの通知を送信する関数
+def send_discord_notify(message, webhook_url):
     headers = {"Content-Type": "application/json"}
     payload = {"content": message}
-    response = requests.post(url, headers=headers, json=payload)
+    response = requests.post(webhook_url, headers=headers, json=payload)
     if response.status_code == 200:
         logging.info('通知が送信されました')
     else:
         logging.error('通知の送信に失敗しました')
 
-# ちんおちんちん：iphoneのDiscordに通知を送信する関数
-def send_discord_notify2(message):
-    url = DISCORD_WEBHOOK_URL2
-    headers = {"Content-Type": "application/json"}
-    payload = {"content": message}
-    response = requests.post(url, headers=headers, json=payload)
-    if response.status_code == 200:
-        logging.info('通知が送信されました')
-    else:
-        logging.error('通知の送信に失敗しました')
-
-# 冒険者ギルド：カメラのDiscordに通知を送信する関数
-def send_discord_notify3(message):
-    url = DISCORD_WEBHOOK_URL3
-    headers = {"Content-Type": "application/json"}
-    payload = {"content": message}
-    response = requests.post(url, headers=headers, json=payload)
-    if response.status_code == 200:
-        logging.info('通知が送信されました')
-    else:
-        logging.error('通知の送信に失敗しました')
 
 chrome_options = Options()
 chrome_options.add_argument("--headless")
@@ -158,20 +146,37 @@ chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64
 # WebDriverのパスを指定
 service = Service(ChromeDriverManager().install())
 
-csv_file_path = 'buyback_prices.csv'
+# GAS経由でデータを取得
+def get_data(site_name):
+    try:
+        response = requests.get(gas_url, params={'siteName': site_name})
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logging.error("HTTPリクエストエラー:", e)
+    except ValueError:
+        logging.error("JSON解析エラー: レスポンスがJSON形式ではありません。レスポンス内容:", response.text)
+    return []
 
-# CSVファイルが存在しない場合、作成してヘッダーを設定
-if not os.path.exists(csv_file_path):
-    with open(csv_file_path, 'w', newline='', encoding='utf-8-sig') as file:
-        writer = csv.writer(file)
-        writer.writerow(["time", "product", "site", "price", "change", "profit"])
+# GAS経由でデータを書き込む
+def send_data(data):
+    try:
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(gas_url, headers=headers, data=json.dumps(data))
+        response.raise_for_status()
+        logging.info("書き込みのレスポンス内容: " + response.text)  # 修正箇所
+    except requests.exceptions.RequestException as e:
+        logging.error("HTTPリクエストエラー:", e)
 
-def check_price(driver, url, products, site_name, csv_file_path, first_run):
+
+def check_price_group1(driver, url, products, site_name, item_category):
     logging.info(f"Checking prices from URL: {url}")
+    data = get_data(site_name)
+    latest_data = filter_data(data, site_name, products)
 
     try:
         driver.get(url)
-        time.sleep(5)  # ページが完全にロードされるのを待つ
+        WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.TAG_NAME, "body"))) # ページのボディ要素が表示されるまで待機
 
         # 買取一丁目の場合、ボタンをクリックする
         if site_name == "買取一丁目":
@@ -203,24 +208,26 @@ def check_price(driver, url, products, site_name, csv_file_path, first_run):
                 elif site_name == "モバイルミックス":
                     current_price_text = price_element.text.replace(',', '').replace('円', '').strip()
                     current_price = int(current_price_text)
+                
+                #色差別情報抽出
+                additional_info_element = driver.find_element(By.XPATH, product["xpath"])
+                additional_info = additional_info_element.text.strip() # 追加情報を取得
 
                 logging.info(f"Current Price for {product_name} on {site_name}: {current_price}")
+                logging.info(f"Additional Info for {product_name} on {site_name}: {additional_info}")
 
-                # 現在の買取価格をCSVファイルから読み込む
+                # 現在の買取価格と色差別情報をGAS経由で取得したデータから読み込む
                 last_price = None
-                with open(csv_file_path, 'r', newline='', encoding='utf-8-sig') as file:
-                    reader = csv.reader(file)
-                    header = next(reader)
-                    rows = list(reader)
-                    for row in rows:
-                        if row[1] == product_name and row[2] == site_name:
-                            last_price = int(row[3])
+                for row in latest_data:
+                    if row[1] == product_name and row[2] == site_name:
+                        last_price = int(row[3])
 
                 # 変化率と利益を計算
                 change = current_price - last_price if last_price else 0
                 profit = current_price - retail_price
-                profit1 = int((retail_price / 100) + profit)
-                profit2 = int((retail_price / 50) + profit)
+                profit1 = int((retail_price / 100 * 1) + profit)
+                profit1a = int((retail_price / 100 * 1.5) + profit)
+                profit2 = int((retail_price / 100 * 2) + profit)
 
                 logging.info(f"Price Change for {product_name} on {site_name}: {change}, Profit: {profit}")
 
@@ -235,33 +242,46 @@ def check_price(driver, url, products, site_name, csv_file_path, first_run):
                 profit1_str = f'1%: +{profit1}円' if profit1 > 0 else f'1%: -{abs(profit1)}円' if profit1 < 0 else '1%: 0円'
                 profits.append(f'{product_name}: {profit_str} ({profit1_str})')
 
-                # CSVファイルに新しい買取価格を保存
-                now = datetime.now(JST).strftime('%Y-%m-%d %H:%M:%S')
-                with open(csv_file_path, 'a', newline='', encoding='utf-8-sig') as file:
-                    writer = csv.writer(file)
-                    writer.writerow([now, product_name, site_name, current_price, change, profit])
+                # データをGAS経由でスプレッドシートに保存
+                data_to_send = {
+                "time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                "product": product_name,
+                "site": site_name,
+                "price": current_price,
+                "change": change,
+                "profit": profit,
+                "additional_info": additional_info,
+                "profit1": profit1,
+                "profit1a": profit1a,
+                "profit2": profit2,
+                "item_category": item_category
+                }
+                send_data(data_to_send)
 
             except Exception as e:
                 logging.error(f"エラーが発生しました（{product_name} on {site_name}）: {e}")
 
         # 価格変動があった場合のみ通知を送信
-        if changes and not first_run:
+        if changes:
             kaitoriya_icon = f'1️⃣' if site_name == '買取一丁目' else '📱'
             URL_NOFICE = f'{URL_KAITORI_ICHOME}' if site_name == '買取一丁目' else URL_MOBILE_MIX
             message = (
-                f'{kaitoriya_icon} [{site_name}](<{URL_NOFICE}>)\n' +
+                f'{kaitoriya_icon} [{site_name}](<{URL_NOFICE}>)（[一覧表](<https://docs.google.com/spreadsheets/d/1TlN5EvH2-dd9EqxZdDMW4zuvuxbktOd_In_HcYA3RM0/edit?usp=sharing>)）\n' +
                 '\n'.join(prices) + '\n\n' +
                 '～定価との差額～\n' +
                 '\n'.join(profits) + '\n\n' +
                 '￣￣￣￣￣'
             )
-            send_discord_notify1(message)
-            send_discord_notify2(message)
+            send_discord_notify(message, DISCORD_WEBHOOK_URL1)
+            send_discord_notify(message, DISCORD_WEBHOOK_URL2)
 
     except Exception as e:
         logging.error(f"エラーが発生しました: {e}")
 
-def check_rudeya_iphone_prices(driver, products, csv_file_path, first_run):
+
+def check_price_group2(driver,URL_NOFICE, products, site_name, item_category, check_pattern):
+    data = get_data(site_name)
+    latest_data = filter_data(data, site_name, products)
     prices = []
     profits = []
     changes = False
@@ -269,39 +289,47 @@ def check_rudeya_iphone_prices(driver, products, csv_file_path, first_run):
     for product in products:
         product_name = product["name"]
         product_url = product["url"]
-        product_class = product["class"]
         retail_price = product["retail_price"]
+        if check_pattern == "class":
+            product_class = product["class"]
+        elif check_pattern == "id":
+            product_id = product["id"]
+        elif check_pattern == "xpath":
+            product_xpath = product["xpath"]
 
         logging.info(f"Checking price from URL: {product_url}")
 
         try:
             driver.get(product_url)
             time.sleep(5)  # ページが完全にロードされるのを待つ
-
-            WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.CLASS_NAME, product_class)))  # タイムアウト時間を40秒に延長
-            price_element = driver.find_element(By.CLASS_NAME, product_class)
+            if check_pattern == "class":
+                WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.CLASS_NAME, product_class)))  # タイムアウト時間を40秒に延長
+                price_element = driver.find_element(By.CLASS_NAME, product_class)
+            elif check_pattern == "id":
+                WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.ID, product_id)))  # タイムアウト時間を40秒に延長
+                price_element = driver.find_element(By.ID, product_id)
+            elif check_pattern == "xpath":
+                WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.XPATH, product_xpath)))  # タイムアウト時間を40秒に延長
+                price_element = driver.find_element(By.XPATH, product_xpath)
             current_price_text = price_element.text.replace(',', '').replace('円', '').strip()
             current_price = int(current_price_text)
 
-            logging.info(f"Current Price for {product_name} on 買取ルデヤ: {current_price}")
+            logging.info(f"Current Price for {product_name} on {site_name}: {current_price}")
 
-            # 現在の買取価格をCSVファイルから読み込む
+            # 現在の買取価格をGAS経由で取得したデータから読み込む
             last_price = None
-            with open(csv_file_path, 'r', newline='', encoding='utf-8-sig') as file:
-                reader = csv.reader(file)
-                header = next(reader)
-                rows = list(reader)
-                for row in rows:
-                    if row[1] == product_name and row[2] == "買取ルデヤ":
-                        last_price = int(row[3])
+            for row in latest_data:
+                if row[1] == product_name and row[2] == site_name:
+                    last_price = int(row[3])
 
             # 変化率と利益を計算
             change = current_price - last_price if last_price else 0
             profit = current_price - retail_price
-            profit1 = int((retail_price / 100) + profit)
-            profit2 = int((retail_price / 50) + profit)
+            profit1 = int((retail_price / 100 * 1) + profit)
+            profit1a = int((retail_price / 100 * 1.5) + profit)
+            profit2 = int((retail_price / 100 * 2) + profit)
 
-            logging.info(f"Price Change for {product_name} on 買取ルデヤ: {change}, Profit: {profit}")
+            logging.info(f"Price Change for {product_name} on {site_name}: {change}, Profit: {profit}")
 
             # 価格に変動があったかチェック
             if last_price is None or current_price != last_price:
@@ -314,422 +342,91 @@ def check_rudeya_iphone_prices(driver, products, csv_file_path, first_run):
             profit1_str = f'1%: +{profit1}円' if profit1 > 0 else f'1%: -{abs(profit1)}円' if profit1 < 0 else '1%: 0円'
             profits.append(f'{product_name}: {profit_str} ({profit1_str})')
 
-            # CSVファイルに新しい買取価格を保存
-            with open(csv_file_path, 'a', newline='', encoding='utf-8-sig') as file:
-                writer = csv.writer(file)
-                writer.writerow([time.strftime('%Y-%m-%d %H:%M:%S'), product_name, "買取ルデヤ", current_price, change, profit])
+            # データをGAS経由でスプレッドシートに保存
+            data_to_send = {
+            "time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "product": product_name,
+            "site": site_name,
+            "price": current_price,
+            "change": change,
+            "profit": profit,
+            "additional_info": "",
+            "profit1": profit1,
+            "profit1a": profit1a,
+            "profit2": profit2,
+            "item_category": item_category
+            }
+            send_data(data_to_send)
 
         except Exception as e:
-            logging.error(f"エラーが発生しました（{product_name} on 買取ルデヤ）: {e}")
+            logging.error(f"エラーが発生しました（{product_name} on {site_name}）: {e}")
 
     # 価格変動があった場合のみ通知を送信
-    if changes and not first_run:
+    if changes:
+        kaitoriya_icon = f'1️⃣' if site_name == '買取一丁目' else '📱' if site_name == 'モバイルミックス'  else '🥸' if site_name == '買取ルデヤ' else '🌳' if site_name == '森森買取' else '📚' if site_name == '買取Wiki' else '🗻'
         message = (
-            '🥸 [買取ルデヤ](<https://kaitori-rudeya.com/search/index/iPhone%2016/-/-/->)\n' +
+            f'{kaitoriya_icon} [{site_name}](<{URL_NOFICE}>)（[一覧表](<https://docs.google.com/spreadsheets/d/1TlN5EvH2-dd9EqxZdDMW4zuvuxbktOd_In_HcYA3RM0/edit?usp=sharing>)）\n' +
             '\n'.join(prices) + '\n\n' +
             '～定価との差額～\n' +
             '\n'.join(profits) + '\n\n' +
             '￣￣￣￣￣'
         )
-        send_discord_notify1(message)
-        send_discord_notify2(message)
+        if item_category == "iphone":
+            send_discord_notify(message, DISCORD_WEBHOOK_URL1)
+            send_discord_notify(message, DISCORD_WEBHOOK_URL2)
+        else:
+            send_discord_notify(message, DISCORD_WEBHOOK_URL3)
+
+
+def filter_data(data, site_name, products):
+    filtered_data = []
+    latest_data = {}
+
+    for row in data:
+        time, product, site, price, change, profit, *additional_info = row
+        if site == site_name and product in [p['name'] for p in products]:
+            time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')  # 修正箇所
+            if product not in latest_data or time > latest_data[product]['time']:
+                latest_data[product] = {
+                    'time': time,
+                    'product': product,
+                    'site': site,
+                    'price': price,
+                    'change': change,
+                    'profit': profit,
+                    'additional_info': additional_info
+                }
+
+    for product in [p['name'] for p in products]:
+        if product in latest_data:
+            filtered_data.append([
+                latest_data[product]['time'].strftime('%Y-%m-%d %H:%M:%S'),
+                latest_data[product]['product'],
+                latest_data[product]['site'],
+                latest_data[product]['price'],
+                latest_data[product]['change'],
+                latest_data[product]['profit'],
+                *latest_data[product]['additional_info']
+            ])
+
+    return filtered_data
 
-def check_rudeya_camera_prices(driver, products, csv_file_path, first_run):
-    prices = []
-    profits = []
-    changes = False
-
-    for product in products:
-        product_name = product["name"]
-        product_url = product["url"]
-        product_class = product["class"]
-        retail_price = product["retail_price"]
-
-        logging.info(f"Checking price from URL: {product_url}")
-
-        try:
-            driver.get(product_url)
-            time.sleep(5)  # ページが完全にロードされるのを待つ
-
-            WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.CLASS_NAME, product_class)))  # タイムアウト時間を40秒に延長
-            price_element = driver.find_element(By.CLASS_NAME, product_class)
-            current_price_text = price_element.text.replace(',', '').replace('円', '').strip()
-            current_price = int(current_price_text)
-
-            logging.info(f"Current Price for {product_name} on 買取ルデヤ: {current_price}")
-
-            # 現在の買取価格をCSVファイルから読み込む
-            last_price = None
-            with open(csv_file_path, 'r', newline='', encoding='utf-8-sig') as file:
-                reader = csv.reader(file)
-                header = next(reader)
-                rows = list(reader)
-                for row in rows:
-                    if row[1] == product_name and row[2] == "買取ルデヤ":
-                        last_price = int(row[3])
-
-            # 変化率と利益を計算
-            change = current_price - last_price if last_price else 0
-            profit = current_price - retail_price
-            profit1 = int((retail_price / 100) + profit)
-            profit2 = int((retail_price / 50) + profit)
-
-            logging.info(f"Price Change for {product_name} on 買取ルデヤ: {change}, Profit: {profit}")
-
-            # 価格に変動があったかチェック
-            if last_price is None or current_price != last_price:
-                changes = True
-
-            # リストに保存
-            change_str = f'+{change}円' if change > 0 else f'-{abs(change)}円' if change < 0 else '±0'
-            prices.append(f'{product_name}: {current_price}円 ({change_str}){"🔥" if change > 0 else "💧" if change < 0 else ""}')
-            profit_str = f'+{profit}円' if profit > 0 else f'-{abs(profit)}円' if profit < 0 else '0円'
-            profit1_str = f'1%: +{profit1}円' if profit1 > 0 else f'1%: -{abs(profit1)}円' if profit1 < 0 else '1%: 0円'
-            profits.append(f'{product_name}: {profit_str} ({profit1_str})')
-
-            # CSVファイルに新しい買取価格を保存
-            with open(csv_file_path, 'a', newline='', encoding='utf-8-sig') as file:
-                writer = csv.writer(file)
-                writer.writerow([time.strftime('%Y-%m-%d %H:%M:%S'), product_name, "買取ルデヤ", current_price, change, profit])
-
-        except Exception as e:
-            logging.error(f"エラーが発生しました（{product_name} on 買取ルデヤ）: {e}")
-
-    # 価格変動があった場合のみ通知を送信
-    if changes and not first_run:
-        message = (
-            '🥸 [買取ルデヤ](<https://kaitori-rudeya.com/search/index/canon/-/-/11>)\n' +
-            '\n'.join(prices) + '\n\n' +
-            '～定価との差額～\n' +
-            '\n'.join(profits) + '\n\n' +
-            '￣￣￣￣￣'
-        )
-        send_discord_notify3(message)
-
-def check_rudeya_instax_prices(driver, products, csv_file_path, first_run):
-    prices = []
-    profits = []
-    changes = False
-
-    for product in products:
-        product_name = product["name"]
-        product_url = product["url"]
-        product_class = product["class"]
-        retail_price = product["retail_price"]
-
-        logging.info(f"Checking price from URL: {product_url}")
-
-        try:
-            driver.get(product_url)
-            time.sleep(5)  # ページが完全にロードされるのを待つ
-
-            WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.CLASS_NAME, product_class)))  # タイムアウト時間を40秒に延長
-            price_element = driver.find_element(By.CLASS_NAME, product_class)
-            current_price_text = price_element.text.replace(',', '').replace('円', '').strip()
-            current_price = int(current_price_text)
-
-            logging.info(f"Current Price for {product_name} on 買取ルデヤ: {current_price}")
-
-            # 現在の買取価格をCSVファイルから読み込む
-            last_price = None
-            with open(csv_file_path, 'r', newline='', encoding='utf-8-sig') as file:
-                reader = csv.reader(file)
-                header = next(reader)
-                rows = list(reader)
-                for row in rows:
-                    if row[1] == product_name and row[2] == "買取ルデヤ":
-                        last_price = int(row[3])
-
-            # 変化率と利益を計算
-            change = current_price - last_price if last_price else 0
-            profit = current_price - retail_price
-            profit1 = int((retail_price / 100) + profit)
-            profit2 = int((retail_price / 50) + profit)
-
-            logging.info(f"Price Change for {product_name} on 買取ルデヤ: {change}, Profit: {profit}")
-
-            # 価格に変動があったかチェック
-            if last_price is None or current_price != last_price:
-                changes = True
-
-            # リストに保存
-            change_str = f'+{change}円' if change > 0 else f'-{abs(change)}円' if change < 0 else '±0'
-            prices.append(f'{product_name}: {current_price}円 ({change_str}){"🔥" if change > 0 else "💧" if change < 0 else ""}')
-            profit_str = f'+{profit}円' if profit > 0 else f'-{abs(profit)}円' if profit < 0 else '0円'
-            profit1_str = f'1%: +{profit1}円' if profit1 > 0 else f'1%: -{abs(profit1)}円' if profit1 < 0 else '1%: 0円'
-            profits.append(f'{product_name}: {profit_str} ({profit1_str})')
-
-            # CSVファイルに新しい買取価格を保存
-            with open(csv_file_path, 'a', newline='', encoding='utf-8-sig') as file:
-                writer = csv.writer(file)
-                writer.writerow([time.strftime('%Y-%m-%d %H:%M:%S'), product_name, "買取ルデヤ", current_price, change, profit])
-
-        except Exception as e:
-            logging.error(f"エラーが発生しました（{product_name} on 買取ルデヤ）: {e}")
-
-    # 価格変動があった場合のみ通知を送信
-    if changes and not first_run:
-        message = (
-            '🥸 [買取ルデヤ](<https://kaitori-rudeya.com/search/index/FUJIFILM%E3%80%80%E6%9E%9A/-/-/->)\n' +
-            '\n'.join(prices) + '\n\n' +
-            '～定価との差額～\n' +
-            '\n'.join(profits) + '\n\n' +
-            '￣￣￣￣￣'
-        )
-        send_discord_notify3(message)
-
-
-
-def check_tomiya_instax_prices(driver, products, csv_file_path, first_run):
-    prices = []
-    profits = []
-    changes = False
-
-    for product in products:
-        product_name = product["name"]
-        product_url = product["url"]
-        product_xpath = product["xpath"]
-        retail_price = product["retail_price"]
-
-        logging.info(f"Checking price from URL: {product_url}")
-
-        try:
-            driver.get(product_url)
-            time.sleep(5)  # ページが完全にロードされるのを待つ
-
-            WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.XPATH, product_xpath)))  # タイムアウト時間を40秒に延長
-            price_element = driver.find_element(By.XPATH, product_xpath)
-            current_price_text = price_element.text.replace(',', '').replace('円', '').strip()
-            current_price = int(current_price_text)
-
-            logging.info(f"Current Price for {product_name} on TOMIYA富屋: {current_price}")
-
-            # 現在の買取価格をCSVファイルから読み込む
-            last_price = None
-            with open(csv_file_path, 'r', newline='', encoding='utf-8-sig') as file:
-                reader = csv.reader(file)
-                header = next(reader)
-                rows = list(reader)
-                for row in rows:
-                    if row[1] == product_name and row[2] == "TOMIYA富屋":
-                        last_price = int(row[3])
-
-            # 変化率と利益を計算
-            change = current_price - last_price if last_price else 0
-            profit = current_price - retail_price
-            profit1 = int((retail_price / 100) + profit)
-            profit2 = int((retail_price / 50) + profit)
-
-            logging.info(f"Price Change for {product_name} on TOMIYA富屋: {change}, Profit: {profit}")
-
-            # 価格に変動があったかチェック
-            if last_price is None or current_price != last_price:
-                changes = True
-
-            # リストに保存
-            change_str = f'+{change}円' if change > 0 else f'-{abs(change)}円' if change < 0 else '±0'
-            prices.append(f'**{product_name}**: {current_price}円 ({change_str}){"🔥" if change > 0 else "💧" if change < 0 else ""}')
-            profit_str = f'+{profit}円' if profit > 0 else f'-{abs(profit)}円' if profit < 0 else '0円'
-            profit1_str = f'1%: +{profit1}円' if profit1 > 0 else f'1%: -{abs(profit1)}円' if profit1 < 0 else '1%: 0円'
-            profits.append(f'**{product_name}**: {profit_str} ({profit1_str})')
-
-            # CSVファイルに新しい買取価格を保存
-            with open(csv_file_path, 'a', newline='', encoding='utf-8-sig') as file:
-                writer = csv.writer(file)
-                writer.writerow([time.strftime('%Y-%m-%d %H:%M:%S'), product_name, "TOMIYA富屋", current_price, change, profit])
-
-        except Exception as e:
-            logging.error(f"エラーが発生しました（{product_name} on TOMIYA富屋）: {e}")
-
-    # 価格変動があった場合のみ通知を送信
-    if changes and not first_run:
-        message = (
-            '🗻 [TOMIYA富屋](<https://www.jptomiya.com/web/#/>)\n' +
-            '\n'.join(prices) + '\n\n' +
-            '～定価との差額～\n' +
-            '\n'.join(profits) + '\n\n' +
-            '￣￣￣￣￣'
-        )
-        send_discord_notify3(message)
-
-
-def check_morimori_prices(driver, products, csv_file_path, first_run):
-    prices = []
-    profits = []
-    changes = False
-
-    for product in products:
-        product_name = product["name"]
-        product_url = product["url"]
-        product_id = product["id"]
-        retail_price = product["retail_price"]
-
-        logging.info(f"Checking price from URL: {product_url}")
-
-        try:
-            driver.get(product_url)
-            time.sleep(5)  # ページが完全にロードされるのを待つ
-
-            WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.ID, product_id)))  # タイムアウト時間を40秒に延長
-            price_element = driver.find_element(By.ID, product_id)
-            current_price_text = price_element.text.replace(',', '').replace('円', '').strip()
-            current_price = int(current_price_text)
-
-            logging.info(f"Current Price for {product_name} on 森森買取: {current_price}")
-
-            # 現在の買取価格をCSVファイルから読み込む
-            last_price = None
-            with open(csv_file_path, 'r', newline='', encoding='utf-8-sig') as file:
-                reader = csv.reader(file)
-                header = next(reader)
-                rows = list(reader)
-                for row in rows:
-                    if row[1] == product_name and row[2] == "森森買取":
-                        last_price = int(row[3])
-
-            # 変化率と利益を計算
-            change = current_price - last_price if last_price else 0
-            profit = current_price - retail_price
-            profit1 = int((retail_price / 100) + profit)
-            profit2 = int((retail_price / 50) + profit)
-
-            logging.info(f"Price Change for {product_name} on 森森買取: {change}, Profit: {profit}")
-
-            # 価格に変動があったかチェック
-            if last_price is None or current_price != last_price:
-                changes = True
-
-            # リストに保存
-            change_str = f'+{change}円' if change > 0 else f'-{abs(change)}円' if change < 0 else '±0'
-            prices.append(f'{product_name}: {current_price}円 ({change_str}){"🔥" if change > 0 else "💧" if change < 0 else ""}')
-            profit_str = f'+{profit}円' if profit > 0 else f'-{abs(profit)}円' if profit < 0 else '0円'
-            profit1_str = f'1%: +{profit1}円' if profit1 > 0 else f'1%: -{abs(profit1)}円' if profit1 < 0 else '1%: 0円'
-            profits.append(f'{product_name}: {profit_str} ({profit1_str})')
-
-            # CSVファイルに新しい買取価格を保存
-            with open(csv_file_path, 'a', newline='', encoding='utf-8-sig') as file:
-                writer = csv.writer(file)
-                writer.writerow([time.strftime('%Y-%m-%d %H:%M:%S'), product_name, "森森買取", current_price, change, profit])
-
-        except Exception as e:
-            logging.error(f"エラーが発生しました（{product_name} on 森森買取）: {e}")
-
-    # 価格変動があった場合のみ通知を送信
-    if changes and not first_run:
-        message = (
-            '🌳 [森森買取](<https://www.morimori-kaitori.jp/search/iphone%2016%20pro?sk=iphone+16+pro>)\n' +
-            '\n'.join(prices) + '\n\n' +
-            '～定価との差額～\n' +
-            '\n'.join(profits) + '\n\n' +
-            '￣￣￣￣￣'
-        )
-        send_discord_notify1(message)
-        send_discord_notify2(message)
-
-def check_wiki_prices(driver, products, csv_file_path, first_run):
-    prices = []
-    profits = []
-    changes = False
-
-    for product in products:
-        product_name = product["name"]
-        product_url = product["url"]
-        product_id = product["id"]
-        retail_price = product["retail_price"]
-
-        logging.info(f"Checking price from URL: {product_url}")
-
-        try:
-            driver.get(product_url)
-            time.sleep(5)  # ページが完全にロードされるのを待つ
-
-            WebDriverWait(driver, 40).until(EC.presence_of_element_located((By.ID, product_id)))  # タイムアウト時間を40秒に延長
-            price_element = driver.find_element(By.ID, product_id)
-            current_price_text = price_element.text.replace(',', '').replace('円', '').strip()
-            current_price = int(current_price_text)
-
-            logging.info(f"Current Price for {product_name} on 買取Wiki: {current_price}")
-
-            # 現在の買取価格をCSVファイルから読み込む
-            last_price = None
-            with open(csv_file_path, 'r', newline='', encoding='utf-8-sig') as file:
-                reader = csv.reader(file)
-                header = next(reader)
-                rows = list(reader)
-                for row in rows:
-                    if row[1] == product_name and row[2] == "買取Wiki":
-                        last_price = int(row[3])
-
-            # 変化率と利益を計算
-            change = current_price - last_price if last_price else 0
-            profit = current_price - retail_price
-            profit1 = int((retail_price / 100) + profit)
-            profit2 = int((retail_price / 50) + profit)
-
-            logging.info(f"Price Change for {product_name} on 買取Wiki: {change}, Profit: {profit}")
-
-            # 価格に変動があったかチェック
-            if last_price is None or current_price != last_price:
-                changes = True
-
-            # リストに保存
-            change_str = f'+{change}円' if change > 0 else f'-{abs(change)}円' if change < 0 else '±0'
-            prices.append(f'{product_name}: {current_price}円 ({change_str}){"🔥" if change > 0 else "💧" if change < 0 else ""}')
-            profit_str = f'+{profit}円' if profit > 0 else f'-{abs(profit)}円' if profit < 0 else '0円'
-            profit1_str = f'1%: +{profit1}円' if profit1 > 0 else f'1%: -{abs(profit1)}円' if profit1 < 0 else '1%: 0円'
-            profits.append(f'{product_name}: {profit_str} ({profit1_str})')
-
-            # CSVファイルに新しい買取価格を保存
-            with open(csv_file_path, 'a', newline='', encoding='utf-8-sig') as file:
-                writer = csv.writer(file)
-                writer.writerow([time.strftime('%Y-%m-%d %H:%M:%S'), product_name, "買取Wiki", current_price, change, profit])
-
-        except Exception as e:
-            logging.error(f"エラーが発生しました（{product_name} on 買取Wiki）: {e}")
-
-    # 価格変動があった場合のみ通知を送信
-    if changes and not first_run:
-        message = (
-            '📚 [買取Wiki](<https://iphonekaitori.tokyo/search?type=&q=iPhone+16+pro#searchtop>)\n' +
-            '\n'.join(prices) + '\n\n' +
-            '～定価との差額～\n' +
-            '\n'.join(profits) + '\n\n' +
-            '￣￣￣￣￣'
-        )
-        send_discord_notify1(message)
-        send_discord_notify2(message)
 
 
 # メイン関数
 def main():
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
-    first_run = True # 初回実行フラグを設定
-
-    # 30秒ごとに無限にチェックを繰り返す
+    # 無限にチェックを繰り返す
     while True:
-        check_price(driver, URL_KAITORI_ICHOME, products, "買取一丁目", csv_file_path, first_run)
-        check_price(driver, URL_MOBILE_MIX, mobile_mix_products, "モバイルミックス", csv_file_path, first_run)
-        check_rudeya_iphone_prices(driver, rudeya_iphone_products, csv_file_path, first_run)
-        check_rudeya_camera_prices(driver, rudeya_camera_products, csv_file_path, first_run)
-        check_rudeya_instax_prices(driver, rudeya_instax_products, csv_file_path, first_run)
-        check_tomiya_instax_prices(driver, tomiya_instax_products, csv_file_path, first_run)
-        check_morimori_prices(driver, morimori_products, csv_file_path, first_run)
-        check_wiki_prices(driver, wiki_products, csv_file_path, first_run)
-        logging.info("30秒後に再チェックします...")
-
-        first_run = False # 2回目以降は通知を行うためにフラグを更新
-        
-        time.sleep(30)
+        check_price_group1(driver, URL_KAITORI_ICHOME, products, "買取一丁目", "iphone")
+        check_price_group1(driver, URL_MOBILE_MIX, mobile_mix_products, "モバイルミックス", "iphone")
+        check_price_group2(driver, URL_KAITORI_RUDEYA_IPHONE, rudeya_iphone_products, "買取ルデヤ", "iphone", "class")
+        check_price_group2(driver, URL_KAITORI_RUDEYA_CAMERA, rudeya_camera_products, "買取ルデヤ", "camera", "class")
+        check_price_group2(driver, URL_KAITORI_RUDEYA_INSTAX, rudeya_instax_products, "買取ルデヤ", "camera", "class")
+        check_price_group2(driver, URL_MORIMORI_KAITORI, morimori_products, "森森買取", "iphone", "id")
+        check_price_group2(driver, URL_KAITORI_WIKI, wiki_products, "買取Wiki", "iphone", "id")
+        check_price_group2(driver, URL_TOMIYA, tomiya_instax_products, "TOMIYA富屋", "camera", "xpath")
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-
