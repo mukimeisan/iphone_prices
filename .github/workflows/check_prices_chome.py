@@ -15,7 +15,7 @@ from datetime import datetime
 import pytz
 
 # GASのウェブアプリのURL
-gas_url = "https://script.google.com/macros/s/AKfycbzXisgoYMxQZ3VsmggzR_D-1XZ10vuUX8zYeHwkO0ZAK53Ew_buCSaGa7Fb5dX5LG-3/exec"
+gas_url = "https://script.google.com/macros/s/AKfycbxkgw2VWjRzTq3EpT_dMv6YkmQs59DhZsCj1O3TeaMrfvbBGenKEMGhgCsuqwZluJQE/exec"
 
 # ロギングの設定
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -419,7 +419,7 @@ def main():
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
     check_price_group1(driver, URL_KAITORI_ICHOME, products, "買取一丁目", "iphone")
-    #check_price_group1(driver, URL_MOBILE_MIX, mobile_mix_products, "モバイルミックス", "iphone")
+    check_price_group1(driver, URL_MOBILE_MIX, mobile_mix_products, "モバイルミックス", "iphone")
     #check_price_group2(driver, URL_KAITORI_RUDEYA_IPHONE, rudeya_iphone_products, "買取ルデヤ", "iphone", "class")
     #check_price_group2(driver, URL_KAITORI_RUDEYA_CAMERA, rudeya_camera_products, "買取ルデヤ", "camera", "class")
     #check_price_group2(driver, URL_KAITORI_RUDEYA_INSTAX, rudeya_instax_products, "買取ルデヤ", "camera", "class")
