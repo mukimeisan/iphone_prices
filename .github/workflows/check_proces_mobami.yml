@@ -1,4 +1,4 @@
-name: iPhone Price Check 1chome
+name: iPhone Price Check mobami
 
 on:
   workflow_dispatch:  # 手動実行用のトリガー
