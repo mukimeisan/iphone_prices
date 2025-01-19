@@ -419,13 +419,13 @@ def main():
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
     check_price_group1(driver, URL_KAITORI_ICHOME, products, "買取一丁目", "iphone")
-    check_price_group1(driver, URL_MOBILE_MIX, mobile_mix_products, "モバイルミックス", "iphone")
-    check_price_group2(driver, URL_KAITORI_RUDEYA_IPHONE, rudeya_iphone_products, "買取ルデヤ", "iphone", "class")
-    check_price_group2(driver, URL_KAITORI_RUDEYA_CAMERA, rudeya_camera_products, "買取ルデヤ", "camera", "class")
-    check_price_group2(driver, URL_KAITORI_RUDEYA_INSTAX, rudeya_instax_products, "買取ルデヤ", "camera", "class")
-    check_price_group2(driver, URL_MORIMORI_KAITORI, morimori_products, "森森買取", "iphone", "id")
-    check_price_group2(driver, URL_KAITORI_WIKI, wiki_products, "買取Wiki", "iphone", "id")
-    check_price_group2(driver, URL_TOMIYA, tomiya_instax_products, "TOMIYA富屋", "camera", "xpath")
+    #check_price_group1(driver, URL_MOBILE_MIX, mobile_mix_products, "モバイルミックス", "iphone")
+    #check_price_group2(driver, URL_KAITORI_RUDEYA_IPHONE, rudeya_iphone_products, "買取ルデヤ", "iphone", "class")
+    #check_price_group2(driver, URL_KAITORI_RUDEYA_CAMERA, rudeya_camera_products, "買取ルデヤ", "camera", "class")
+    #check_price_group2(driver, URL_KAITORI_RUDEYA_INSTAX, rudeya_instax_products, "買取ルデヤ", "camera", "class")
+    #check_price_group2(driver, URL_MORIMORI_KAITORI, morimori_products, "森森買取", "iphone", "id")
+    #check_price_group2(driver, URL_KAITORI_WIKI, wiki_products, "買取Wiki", "iphone", "id")
+    #check_price_group2(driver, URL_TOMIYA, tomiya_instax_products, "TOMIYA富屋", "camera", "xpath")
 
 if __name__ == "__main__":
     main()
