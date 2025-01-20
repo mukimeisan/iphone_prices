@@ -239,15 +239,6 @@ def check_price_group1(driver, url, products, site_name, item_category):
                 # 価格に変動があったかチェック
                 if current_price != last_price:
                     changes = True
-                    
-                if last_price is None:
-                    logging.info(f"No previous price found for {product_name} on {site_name}")
-                elif current_price != last_price:
-                    logging.info(f"Price changed for {product_name} on {site_name} from {last_price}円 to {current_price}円")
-                    changes = True
-                else:
-                    logging.info(f"Price for {product_name} on {site_name} remains the same at {current_price}円")
-
 
                 # リストに保存
                 change_str = f'+{change}円' if change > 0 else f'-{abs(change)}円' if change < 0 else '±0'
@@ -348,13 +339,6 @@ def check_price_group2(driver,URL_NOFICE, products, site_name, item_category, ch
             # 価格に変動があったかチェック
             if current_price != last_price:
                 changes = True
-            if last_price is None:
-                logging.info(f"No previous price found for {product_name} on {site_name}")
-            elif current_price != last_price:
-                logging.info(f"Price changed for {product_name} on {site_name} from {last_price}円 to {current_price}円")
-                changes = True
-            else:
-                logging.info(f"Price for {product_name} on {site_name} remains the same at {current_price}円")
 
             # リストに保存
             change_str = f'+{change}円' if change > 0 else f'-{abs(change)}円' if change < 0 else '±0'
