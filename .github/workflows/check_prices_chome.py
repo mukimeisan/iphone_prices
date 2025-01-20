@@ -277,8 +277,10 @@ def check_price_group1(driver, url, products, site_name, item_category):
                 '\n'.join(profits) + '\n\n' +
                 '￣￣￣￣￣'
             )
-            send_discord_notify(message, DISCORD_WEBHOOK_URL1)
-            send_discord_notify(message, DISCORD_WEBHOOK_URL2)
+            # 絵文字が含まれているかを確認する条件文
+            if "🔥" in message or "💧" in message:
+                send_discord_notify(message, DISCORD_WEBHOOK_URL1)
+                send_discord_notify(message, DISCORD_WEBHOOK_URL2)
 
     except Exception as e:
         logging.error(f"エラーが発生しました: {e}")
@@ -376,11 +378,13 @@ def check_price_group2(driver,URL_NOFICE, products, site_name, item_category, ch
             '\n'.join(profits) + '\n\n' +
             '￣￣￣￣￣'
         )
-        if item_category == "iphone":
-            send_discord_notify(message, DISCORD_WEBHOOK_URL1)
-            send_discord_notify(message, DISCORD_WEBHOOK_URL2)
-        else:
-            send_discord_notify(message, DISCORD_WEBHOOK_URL3)
+        # 絵文字が含まれているかを確認する条件文
+        if "🔥" in message or "💧" in message:
+            if item_category == "iphone":
+                send_discord_notify(message, DISCORD_WEBHOOK_URL1)
+                send_discord_notify(message, DISCORD_WEBHOOK_URL2)
+            else:
+                send_discord_notify(message, DISCORD_WEBHOOK_URL3)
 
 
 def filter_data(data, site_name, products):
