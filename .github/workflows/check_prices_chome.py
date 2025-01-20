@@ -114,7 +114,6 @@ URL_TOMIYA = "https://www.jptomiya.com/web/#/"
 
 
 # DiscordのウェブフックURLを設定
-
 test_mode = "on"
 if test_mode == "on":
     # 冒険者ギルド：iphone
@@ -269,18 +268,17 @@ def check_price_group1(driver, url, products, site_name, item_category):
 
         # 価格変動があった場合のみ通知を送信
         if changes:
-            if "🔥" in prices or "💧" in prices:
-                kaitoriya_icon = f'1️⃣' if site_name == '買取一丁目' else '📱'
-                URL_NOFICE = f'{URL_KAITORI_ICHOME}' if site_name == '買取一丁目' else URL_MOBILE_MIX
-                message = (
-                    f'{kaitoriya_icon} [{site_name}](<{URL_NOFICE}>)（[一覧表](<https://docs.google.com/spreadsheets/d/1TlN5EvH2-dd9EqxZdDMW4zuvuxbktOd_In_HcYA3RM0/edit?usp=sharing>)）\n' +
-                    '\n'.join(prices) + '\n\n' +
-                    '～定価との差額～\n' +
-                    '\n'.join(profits) + '\n\n' +
-                    '￣￣￣￣￣'
-                )
-                send_discord_notify(message, DISCORD_WEBHOOK_URL1)
-                send_discord_notify(message, DISCORD_WEBHOOK_URL2)
+            kaitoriya_icon = f'1️⃣' if site_name == '買取一丁目' else '📱'
+            URL_NOFICE = f'{URL_KAITORI_ICHOME}' if site_name == '買取一丁目' else URL_MOBILE_MIX
+            message = (
+                f'{kaitoriya_icon} [{site_name}](<{URL_NOFICE}>)（[一覧表](<https://docs.google.com/spreadsheets/d/1TlN5EvH2-dd9EqxZdDMW4zuvuxbktOd_In_HcYA3RM0/edit?usp=sharing>)）\n' +
+                '\n'.join(prices) + '\n\n' +
+                '～定価との差額～\n' +
+                '\n'.join(profits) + '\n\n' +
+                '￣￣￣￣￣'
+            )
+            send_discord_notify(message, DISCORD_WEBHOOK_URL1)
+            send_discord_notify(message, DISCORD_WEBHOOK_URL2)
 
     except Exception as e:
         logging.error(f"エラーが発生しました: {e}")
