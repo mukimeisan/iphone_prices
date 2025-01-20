@@ -114,17 +114,21 @@ URL_TOMIYA = "https://www.jptomiya.com/web/#/"
 
 
 # DiscordのウェブフックURLを設定
-# 冒険者ギルド：iphone
-DISCORD_WEBHOOK_URL1 = 'https://discord.com/api/webhooks/1325079173399842889/hHIUsQ0WuOmboet6aq9-4q9gyTPxzKzKcH6V1F6qmKJad1-wIZJDwgVwFuAhy4jxSqNu'
-#DISCORD_WEBHOOK_URL1 = 'https://discord.com/api/webhooks/1163480358612901999/nFGZynR9-97R_XncfZw54VDrcZbA-S1YgrSc6mAYX-MgKEaQ9YZ_IeVTeALbu4ihmnyR'
-
-# ちんおちんちん：iphone
-DISCORD_WEBHOOK_URL2 = 'https://discord.com/api/webhooks/1297388299912085606/RcfnqtqUjXbC46Lb_5uY-IPuqIVfkuJ44bzm09wgTQOUAI0Yg5C0cU5BsjeCb22o4m9p'
-#DISCORD_WEBHOOK_URL2 = 'https://discord.com/api/webhooks/1163480358612901999/nFGZynR9-97R_XncfZw54VDrcZbA-S1YgrSc6mAYX-MgKEaQ9YZ_IeVTeALbu4ihmnyR'
-
-# 冒険者ギルド：カメラ
-DISCORD_WEBHOOK_URL3 = 'https://discord.com/api/webhooks/1325079403243503616/a4F7IqxqHcw_ZfnFLLyiz4N49Lky-gWxsbG7tmjIze1_UfoY7ssm2jShSlwakFylutK2'
-#DISCORD_WEBHOOK_URL3 = 'https://discord.com/api/webhooks/1325092803109458051/KbF85tUoBTPtYyZC8ARg0W7JHTQsnHBWyVofGF24GStd_5fYJQQcYaAtb4Kz7p-3uqN6'
+test_mode = "on"
+if test_mode == "on":
+    # 冒険者ギルド：iphone
+    DISCORD_WEBHOOK_URL1 = 'https://discord.com/api/webhooks/1163480358612901999/nFGZynR9-97R_XncfZw54VDrcZbA-S1YgrSc6mAYX-MgKEaQ9YZ_IeVTeALbu4ihmnyR'
+    # ちんおちんちん：iphone
+    DISCORD_WEBHOOK_URL2 = 'https://discord.com/api/webhooks/1163480358612901999/nFGZynR9-97R_XncfZw54VDrcZbA-S1YgrSc6mAYX-MgKEaQ9YZ_IeVTeALbu4ihmnyR'
+    # 冒険者ギルド：カメラ
+    DISCORD_WEBHOOK_URL3 = 'https://discord.com/api/webhooks/1325092803109458051/KbF85tUoBTPtYyZC8ARg0W7JHTQsnHBWyVofGF24GStd_5fYJQQcYaAtb4Kz7p-3uqN6'
+elif test_mode == "off":
+    # 冒険者ギルド：iphone
+    DISCORD_WEBHOOK_URL1 = 'https://discord.com/api/webhooks/1325079173399842889/hHIUsQ0WuOmboet6aq9-4q9gyTPxzKzKcH6V1F6qmKJad1-wIZJDwgVwFuAhy4jxSqNu'
+    # ちんおちんちん：iphone
+    DISCORD_WEBHOOK_URL2 = 'https://discord.com/api/webhooks/1297388299912085606/RcfnqtqUjXbC46Lb_5uY-IPuqIVfkuJ44bzm09wgTQOUAI0Yg5C0cU5BsjeCb22o4m9p'
+    # 冒険者ギルド：カメラ
+    DISCORD_WEBHOOK_URL3 = 'https://discord.com/api/webhooks/1325079403243503616/a4F7IqxqHcw_ZfnFLLyiz4N49Lky-gWxsbG7tmjIze1_UfoY7ssm2jShSlwakFylutK2'
 
 # Discordの通知を送信する関数
 def send_discord_notify(message, webhook_url):
@@ -264,18 +268,17 @@ def check_price_group1(driver, url, products, site_name, item_category):
 
         # 価格変動があった場合のみ通知を送信
         if changes:
-            if "🔥" in prices or "💧" in prices:
-                kaitoriya_icon = f'1️⃣' if site_name == '買取一丁目' else '📱'
-                URL_NOFICE = f'{URL_KAITORI_ICHOME}' if site_name == '買取一丁目' else URL_MOBILE_MIX
-                message = (
-                    f'{kaitoriya_icon} [{site_name}](<{URL_NOFICE}>)（[一覧表](<https://docs.google.com/spreadsheets/d/1TlN5EvH2-dd9EqxZdDMW4zuvuxbktOd_In_HcYA3RM0/edit?usp=sharing>)）\n' +
-                    '\n'.join(prices) + '\n\n' +
-                    '～定価との差額～\n' +
-                    '\n'.join(profits) + '\n\n' +
-                    '￣￣￣￣￣'
-                )
-                send_discord_notify(message, DISCORD_WEBHOOK_URL1)
-                send_discord_notify(message, DISCORD_WEBHOOK_URL2)
+            kaitoriya_icon = f'1️⃣' if site_name == '買取一丁目' else '📱'
+            URL_NOFICE = f'{URL_KAITORI_ICHOME}' if site_name == '買取一丁目' else URL_MOBILE_MIX
+            message = (
+                f'{kaitoriya_icon} [{site_name}](<{URL_NOFICE}>)（[一覧表](<https://docs.google.com/spreadsheets/d/1TlN5EvH2-dd9EqxZdDMW4zuvuxbktOd_In_HcYA3RM0/edit?usp=sharing>)）\n' +
+                '\n'.join(prices) + '\n\n' +
+                '～定価との差額～\n' +
+                '\n'.join(profits) + '\n\n' +
+                '￣￣￣￣￣'
+            )
+            send_discord_notify(message, DISCORD_WEBHOOK_URL1)
+            send_discord_notify(message, DISCORD_WEBHOOK_URL2)
 
     except Exception as e:
         logging.error(f"エラーが発生しました: {e}")
@@ -365,20 +368,19 @@ def check_price_group2(driver,URL_NOFICE, products, site_name, item_category, ch
 
     # 価格変動があった場合のみ通知を送信
     if changes:
-        if "🔥" in prices or "💧" in prices:
-            kaitoriya_icon = f'1️⃣' if site_name == '買取一丁目' else '📱' if site_name == 'モバイルミックス'  else '🥸' if site_name == '買取ルデヤ' else '🌳' if site_name == '森森買取' else '📚' if site_name == '買取Wiki' else '🗻'
-            message = (
-                f'{kaitoriya_icon} [{site_name}](<{URL_NOFICE}>)（[一覧表](<https://docs.google.com/spreadsheets/d/1TlN5EvH2-dd9EqxZdDMW4zuvuxbktOd_In_HcYA3RM0/edit?usp=sharing>)）\n' +
-                '\n'.join(prices) + '\n\n' +
-                '～定価との差額～\n' +
-                '\n'.join(profits) + '\n\n' +
-                '￣￣￣￣￣'
-            )
-            if item_category == "iphone":
-                send_discord_notify(message, DISCORD_WEBHOOK_URL1)
-                send_discord_notify(message, DISCORD_WEBHOOK_URL2)
-            else:
-                send_discord_notify(message, DISCORD_WEBHOOK_URL3)
+        kaitoriya_icon = f'1️⃣' if site_name == '買取一丁目' else '📱' if site_name == 'モバイルミックス'  else '🥸' if site_name == '買取ルデヤ' else '🌳' if site_name == '森森買取' else '📚' if site_name == '買取Wiki' else '🗻'
+        message = (
+            f'{kaitoriya_icon} [{site_name}](<{URL_NOFICE}>)（[一覧表](<https://docs.google.com/spreadsheets/d/1TlN5EvH2-dd9EqxZdDMW4zuvuxbktOd_In_HcYA3RM0/edit?usp=sharing>)）\n' +
+            '\n'.join(prices) + '\n\n' +
+            '～定価との差額～\n' +
+            '\n'.join(profits) + '\n\n' +
+            '￣￣￣￣￣'
+        )
+        if item_category == "iphone":
+            send_discord_notify(message, DISCORD_WEBHOOK_URL1)
+            send_discord_notify(message, DISCORD_WEBHOOK_URL2)
+        else:
+            send_discord_notify(message, DISCORD_WEBHOOK_URL3)
 
 
 def filter_data(data, site_name, products):
