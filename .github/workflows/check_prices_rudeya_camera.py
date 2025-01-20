@@ -15,7 +15,7 @@ from datetime import datetime
 import pytz
 
 # GASのウェブアプリのURL
-gas_url = "https://script.google.com/macros/s/AKfycbxTBmByMUDxXD8I6bWnpbC74pCX8aZrR2_mh1YJOgjgbLwewK8t6BjfYCm9NinhH06MRA/exec"
+gas_url = "https://script.google.com/macros/s/AKfycbw4zWchaH9ADBjFVZn2P_TkusGPLH6fz5i09qs6tb-LAm-NN2nv7zHcmS9-vlj-MR5W/exec"
 
 # ロギングの設定
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
