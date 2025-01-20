@@ -64,7 +64,7 @@ jobs:
         Xvfb :99 -ac &
         python .github/workflows/check_prices_morimori.py
 
-  check_prices_rudeya:
+  check_prices_rudeya_iphone:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -82,8 +82,28 @@ jobs:
         DISPLAY: ":99"  # 仮想ディスプレイ環境を設定
       run: |
         Xvfb :99 -ac &
-        python .github/workflows/check_prices_rudeya.py
+        python .github/workflows/check_prices_rudeya_iphone.py
 
+  check_prices_rudeya_camera:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Run check_prices_rudeya.py
+      env:
+        DISPLAY: ":99"  # 仮想ディスプレイ環境を設定
+      run: |
+        Xvfb :99 -ac &
+        python .github/workflows/check_prices_rudeya_camera.py
+        
   check_prices_tomiya:
     runs-on: ubuntu-latest
     steps:
