@@ -116,7 +116,7 @@ URL_TOMIYA = "https://www.jptomiya.com/web/#/"
 
 
 # DiscordのウェブフックURLを設定
-test_mode = "on"
+test_mode = "off"
 if test_mode == "on":
     # 冒険者ギルド：iphone
     DISCORD_WEBHOOK_URL1 = 'https://discord.com/api/webhooks/1163480358612901999/nFGZynR9-97R_XncfZw54VDrcZbA-S1YgrSc6mAYX-MgKEaQ9YZ_IeVTeALbu4ihmnyR'
