@@ -368,20 +368,19 @@ def check_price_group2(driver,URL_NOFICE, products, site_name, item_category, ch
 
     # 価格変動があった場合のみ通知を送信
     if changes:
-        if "🔥" in prices or "💧" in prices:
-            kaitoriya_icon = f'1️⃣' if site_name == '買取一丁目' else '📱' if site_name == 'モバイルミックス'  else '🥸' if site_name == '買取ルデヤ' else '🌳' if site_name == '森森買取' else '📚' if site_name == '買取Wiki' else '🗻'
-            message = (
-                f'{kaitoriya_icon} [{site_name}](<{URL_NOFICE}>)（[一覧表](<https://docs.google.com/spreadsheets/d/1TlN5EvH2-dd9EqxZdDMW4zuvuxbktOd_In_HcYA3RM0/edit?usp=sharing>)）\n' +
-                '\n'.join(prices) + '\n\n' +
-                '～定価との差額～\n' +
-                '\n'.join(profits) + '\n\n' +
-                '￣￣￣￣￣'
-            )
-            if item_category == "iphone":
-                send_discord_notify(message, DISCORD_WEBHOOK_URL1)
-                send_discord_notify(message, DISCORD_WEBHOOK_URL2)
-            else:
-                send_discord_notify(message, DISCORD_WEBHOOK_URL3)
+        kaitoriya_icon = f'1️⃣' if site_name == '買取一丁目' else '📱' if site_name == 'モバイルミックス'  else '🥸' if site_name == '買取ルデヤ' else '🌳' if site_name == '森森買取' else '📚' if site_name == '買取Wiki' else '🗻'
+        message = (
+            f'{kaitoriya_icon} [{site_name}](<{URL_NOFICE}>)（[一覧表](<https://docs.google.com/spreadsheets/d/1TlN5EvH2-dd9EqxZdDMW4zuvuxbktOd_In_HcYA3RM0/edit?usp=sharing>)）\n' +
+            '\n'.join(prices) + '\n\n' +
+            '～定価との差額～\n' +
+            '\n'.join(profits) + '\n\n' +
+            '￣￣￣￣￣'
+        )
+        if item_category == "iphone":
+            send_discord_notify(message, DISCORD_WEBHOOK_URL1)
+            send_discord_notify(message, DISCORD_WEBHOOK_URL2)
+        else:
+            send_discord_notify(message, DISCORD_WEBHOOK_URL3)
 
 
 def filter_data(data, site_name, products):
