@@ -17,6 +17,9 @@ import pytz
 # GASのウェブアプリのURL
 gas_url = "https://script.google.com/macros/s/AKfycbxTBmByMUDxXD8I6bWnpbC74pCX8aZrR2_mh1YJOgjgbLwewK8t6BjfYCm9NinhH06MRA/exec"
 
+# スプレッドシートのURL
+spread_sheet_url = "https://docs.google.com/spreadsheets/d/1TlN5EvH2-dd9EqxZdDMW4zuvuxbktOd_In_HcYA3RM0/edit?usp=sharing"
+
 # ロギングの設定
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -271,7 +274,7 @@ def check_price_group1(driver, url, products, site_name, item_category):
             kaitoriya_icon = f'1️⃣' if site_name == '買取一丁目' else '📱'
             URL_NOFICE = f'{URL_KAITORI_ICHOME}' if site_name == '買取一丁目' else URL_MOBILE_MIX
             message = (
-                f'{kaitoriya_icon} [{site_name}](<{URL_NOFICE}>)（[一覧表](<https://docs.google.com/spreadsheets/d/1TlN5EvH2-dd9EqxZdDMW4zuvuxbktOd_In_HcYA3RM0/edit?usp=sharing>)）\n' +
+                f'{kaitoriya_icon} [{site_name}](<{URL_NOFICE}>)（[一覧表](<{spread_sheet_url}>)）\n' +
                 '\n'.join(prices) + '\n\n' +
                 '～定価との差額～\n' +
                 '\n'.join(profits) + '\n\n' +
@@ -373,7 +376,7 @@ def check_price_group2(driver,URL_NOFICE, products, site_name, item_category, ch
     if changes:
         kaitoriya_icon = f'1️⃣' if site_name == '買取一丁目' else '📱' if site_name == 'モバイルミックス'  else '🥸' if site_name == '買取ルデヤ' else '🌳' if site_name == '森森買取' else '📚' if site_name == '買取Wiki' else '🗻'
         message = (
-            f'{kaitoriya_icon} [{site_name}](<{URL_NOFICE}>)（[一覧表](<https://docs.google.com/spreadsheets/d/1TlN5EvH2-dd9EqxZdDMW4zuvuxbktOd_In_HcYA3RM0/edit?usp=sharing>)）\n' +
+            f'{kaitoriya_icon} [{site_name}](<{URL_NOFICE}>)（[一覧表](<{spread_sheet_url}>)）\n' +
             '\n'.join(prices) + '\n\n' +
             '～定価との差額～\n' +
             '\n'.join(profits) + '\n\n' +
