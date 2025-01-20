@@ -236,7 +236,7 @@ def check_price_group1(driver, url, products, site_name, item_category):
                 logging.info(f"Price Change for {product_name} on {site_name}: {change}, Profit: {profit}")
 
                 # 価格に変動があったかチェック
-                if last_price is None or current_price != last_price:
+                if current_price != last_price:
                     changes = True
                 if last_price is None:
                     logging.info(f"No previous price found for {product_name} on {site_name}")
@@ -343,7 +343,7 @@ def check_price_group2(driver,URL_NOFICE, products, site_name, item_category, ch
             logging.info(f"Price Change for {product_name} on {site_name}: {change}, Profit: {profit}")
 
             # 価格に変動があったかチェック
-            if last_price is None or current_price != last_price:
+            if current_price != last_price:
                 changes = True
             if last_price is None:
                 logging.info(f"No previous price found for {product_name} on {site_name}")
